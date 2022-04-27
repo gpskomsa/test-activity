@@ -8,6 +8,7 @@ use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
 
+
 /**
  * @extends ServiceEntityRepository<Activity>
  *
@@ -48,16 +49,22 @@ class ActivityRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return Activity[] Returns an array of Activity objects
+     *
+     * @param int $page
+     * @return Activity[]
      */
-    public function getStats()
+    public function getStats(int $page = 1)
     {
-        return $this->createQueryBuilder('a')
+        $result = $this->createQueryBuilder('a')
             ->select('a.url, COUNT(a.url) as cnt, MAX(a.date) as last_datetime')
             ->orderBy('cnt', 'DESC')
+            ->groupBy('a.url')
             ->getQuery()
-            ->getResult()
-        ;
+            ->setFirstResult(($page - 1) * 10)
+            ->setMaxResults(10)
+            ->getResult();
+
+        return $result;
     }
 
 

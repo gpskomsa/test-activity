@@ -15,13 +15,26 @@ use App\Entity\Activity;
 
 class ActivityPutMethod implements JsonRpcMethodInterface, MethodWithValidatedParamsInterface
 {
+    /**
+     *
+     * @var ManagerRegistry
+     */
     protected $doctrine = null;
 
+    /**
+     *
+     * @param ManagerRegistry $doctrine
+     */
     public function __construct(ManagerRegistry $doctrine)
     {
         $this->doctrine = $doctrine;
     }
 
+    /**
+     *
+     * @param array $params
+     * @return array
+     */
     public function apply(array $params = null)
     {
         $entityManager = $this->doctrine->getManager();
@@ -33,9 +46,13 @@ class ActivityPutMethod implements JsonRpcMethodInterface, MethodWithValidatedPa
         $entityManager->persist($activity);
         $entityManager->flush();
 
-        return $params;
+        return ['id' => $activity->getId()];
     }
 
+    /**
+     *
+     * @return Constraint
+     */
     public function getParamsConstraint() : Constraint
     {
         return new Collection(['fields' => [
